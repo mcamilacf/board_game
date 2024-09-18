@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganador</title>
+</head>
+    <body>
+        {% for player in players %}
+            {% if player.winer %}
+                <h1 style="color: {{player.color}};">{{player.name}}: {{player.points}}</h1>
+            {% else %}
+                <h2 style="color: {{player.color}};">{{player.name}}: {{player.points}}</h2>
+            {% endif %}
+        {% endfor %}
+        <h2><a href="{% url 'index'%}">Volver a la pantalla de inicio</a></h2>
+    </body>
+</html>

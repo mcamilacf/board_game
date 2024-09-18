@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugadores</title>
+</head>
+<body>
+    <h1>Mostrar juegadores</h1>
+    {% if players %}
+        <ul>
+            {% for player in players %}
+                <li style="color: {{ player.color }};">{{ player.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay jugadores</p>
+    {% endif %}
+    
+    <h2><a href="http://127.0.0.1:8000/admin/juego/player/add/">Añadir jugador</a></h2>
+    <h2><a href="{% url 'play-game' game_pk %}">Iniciar partida</a></h2>
+    
+</body>
+</html>

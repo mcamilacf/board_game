@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Partida</title>
+        <meta charset="UTF-8">
+        <style>
+            table, td, th { 
+                border-collapse: collapse;
+                padding: 1em;
+                border: 2px solid;             
+            }
+            td {
+                height: 1em; 
+                width: 1em;    
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            {% for row in num %}
+                <tr>
+                    {% for column in num %}
+                        <td>
+                            <table>
+                                <tr>
+                                    {% for player in players %}
+                                        {% if row == player.coordinate_y and column == player.coordinate_x %}
+                                            <td style="background-color:{{player.color}}",>♝</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {%endfor%}
+        </table>
+        <h2>{{num_die}}</h2>
+        <h2><a href="{% url 'play-game' game_pk %}">Tirar el dado</a></h2>  
+        <br>
+        <h2><a href="{% url 'play-winers' game_pk %}">Terminar partida</a></h2>
+        <p>{{actual_player.name}}  {{actual_player.coordinate_x}}/{{actual_player.coordinate_y}} {{actual_player.color}}</p>
+    </body>
+</html>
+{% comment %} {{ forloop.counter }} {% endcomment %}
