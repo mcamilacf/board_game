@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta</title>
+    <style>
+        table, td, th { 
+            border-collapse: collapse;
+            padding: 1em;
+            border: 2px solid;
+            color: white;             
+        }
+        td {
+            height: 20em; 
+            width: 20em;
+            color: white;    
+        }
+    </style>
+</head>
+<body>
+    <table style="background-color:{{box.card.color}}",>
+        <tr>
+            <th>{{box.card.type}}</th>
+        </tr>
+        <tr>
+            <td>{{box.card.text}}</td>
+        </tr>
+    </table>
+    <h2><a href="{% url 'play-game' game_pk %}">Cumplio</a></h2>
+</body>
+</html>

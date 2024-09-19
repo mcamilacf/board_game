@@ -42,6 +42,7 @@ def play_game(request, pk):
     board = Board.objects.get(game=pk)
     boxes = Box.objects.filter(board=board)
     actual_player = game.get_actual_player()
+    next_player = game.get_next_player()
     game.end_turn()
     y = actual_player.coordinate_y
     x = actual_player.coordinate_x
@@ -71,23 +72,31 @@ def play_game(request, pk):
     actual_player.coordinate_y = y
     actual_player.save()     
 
-    return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'boxes':boxes})
+    return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'next_player':next_player, 'boxes':boxes})
+
+def card(request, pk):
+    game = Game.objects.get(pk=pk)
+    previous_player = game.get_previous_player()
+    y = previous_player.coordinate_y
+    x = previous_player.coordinate_x
+    board = Board.objects.get(game=pk)
+    box = Box.objects.filter(board=board).get(position_x=x, position_y=y)
+    return render(request, 'juego/card.html', {'box':box, 'game_pk':pk})
+
+
 
 def winers(request, pk):
     players = Player.objects.filter(game=pk)
     for player in players:
         y = player.coordinate_y
         x = player.coordinate_x
-        if y % 2 == 0:
-            y-=1
+        if y % 2 != 0:
             y = y*8
-            x-=1
-            x = 8-x          
-            player.points = x+y
+            x = 7-x
+            player.points = x+y+1
         else:
-            y-=1
             y = y*8             
-            player.points = x+y
+            player.points = x+y+1
         player.save()
     players = Player.objects.filter(game=pk).order_by('-points')
     player = players[0]

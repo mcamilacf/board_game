@@ -9,6 +9,22 @@ class Game(models.Model):
         if len(players) == 0:
             return None
         return players[self.actual_turn % len(players)]
+    def get_next_player (self):
+        players = self.player_set.all().order_by('turn')
+        if len(players) == 0:
+            return None
+        if self.actual_turn % len(players) == len(players)-1:
+            return players[0]
+        else:
+            return players[ self.actual_turn % len(players) + 1]
+    def get_previous_player (self):
+        players = self.player_set.all().order_by('turn')
+        if len(players) == 0:
+            return None
+        if self.actual_turn % len(players) == 0:
+            return players[len(players)-1]
+        else:
+            return players[ self.actual_turn % len(players) - 1]
     
     def end_turn (self):
         self.actual_turn += 1

@@ -41,10 +41,13 @@
             {%endfor%}
         </table>
         <h2>{{num_die}}</h2>
-        <h2><a href="{% url 'play-game' game_pk %}">Tirar el dado</a></h2>  
+        <h2><a href="{% url 'play-game' game_pk %}">Tirar el dado</a></h2>
+        <h2><a href="{% url 'card' game_pk %}">Ver tarjeta</a></h2>
+        <h2 style="color: {{ actual_player.color }};"> JUGADOR ACTUAL: {{actual_player.name}}</h2>
+        <h2 style="color: {{ next_player.color }};">SIGUIENTE JUGADOR: {{next_player.name}}</h2>
+
         <br>
         <h2><a href="{% url 'play-winers' game_pk %}">Terminar partida</a></h2>
-        <p>{{actual_player.name}}  {{actual_player.coordinate_x}}/{{actual_player.coordinate_y}} {{actual_player.color}}</p>
     </body>
 </html>
 {% comment %} {{ forloop.counter }} {% endcomment %}
