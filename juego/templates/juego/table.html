@@ -28,6 +28,11 @@
                                             <td style="background-color:{{player.color}}",>♝</td>
                                         {% endif %}
                                     {% endfor %}
+                                    {% for box in boxes %}
+                                        {% if row == box.position_y and column == box.position_x %}
+                                            <td style="background-color:{{box.card.color}}",></td>
+                                        {% endif %}
+                                    {% endfor %}
                                 </tr>
                             </table>
                         </td>

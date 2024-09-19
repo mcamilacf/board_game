@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from .forms import GameForm
 from django.shortcuts import redirect
-from .models import Player, Game
+from .models import Player, Game, Board, Box, Card
 import random
+from random import choices
 
 
 def index(request):
@@ -14,6 +15,16 @@ def new_game(request):
         if form.is_valid():
             game = form.save(commit=False)
             game.save()
+            board = Board(game=game)
+            board.save()
+            cards = Card.objects.filter(active=True)
+            box_number = board.column_number * board.row_number
+            for i, card in enumerate(choices(cards, k=box_number)):
+                x = i % board.column_number
+                y = i // board.row_number
+                print(x, y)
+                box = Box(board=board, card=card, position_x=x, position_y=y)
+                box.save()
             return redirect('game-players', pk=game.pk) #es el nombre de la url
     else:
         form = GameForm()
@@ -25,32 +36,34 @@ def players(request, pk):
 
 def play_game(request, pk):
     players = Player.objects.filter(game=pk)    
-    number_of_rows_and_columns=[1,2,3,4,5,6,7,8]
+    number_of_rows_and_columns=list(range (8))
     num_die = random.randint(1, 6)
     game = Game.objects.get(pk=pk)
+    board = Board.objects.get(game=pk)
+    boxes = Box.objects.filter(board=board)
     actual_player = game.get_actual_player()
     game.end_turn()
     y = actual_player.coordinate_y
     x = actual_player.coordinate_x
-    if y % 2 == 0:
+    if y % 2 != 0:
         n = x - num_die
-        if n < 1:
-            z = n * -1
+        if n < 0:
+            x = n * -1 -1
             y += 1
-            x = z+1           
+    
         else:
             x = n
     else:
         n = x + num_die
-        if n > 8:
-            z = n-9
+        if n > 7:
+            z = n-8
             y += 1
-            x = 8-z
+            x = 7-z
         else:
             x = n
-    if x == 1 and y == 8:
+    if x == 0 and y == 7:
         pass
-    elif y > 8:
+    elif y > 7:
         x = actual_player.coordinate_x
         y = actual_player.coordinate_y
     
@@ -58,7 +71,7 @@ def play_game(request, pk):
     actual_player.coordinate_y = y
     actual_player.save()     
 
-    return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, })
+    return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'boxes':boxes})
 
 def winers(request, pk):
     players = Player.objects.filter(game=pk)

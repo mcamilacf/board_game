@@ -6,6 +6,8 @@ class Game(models.Model):
 
     def get_actual_player (self):
         players = self.player_set.all().order_by('turn')
+        if len(players) == 0:
+            return None
         return players[self.actual_turn % len(players)]
     
     def end_turn (self):
@@ -43,21 +45,48 @@ class Player(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     name = models.CharField(max_length=250)
     color = models.CharField(max_length=20, choices=color_choices, default=red)
-    coordinate_x = models.IntegerField(default=1)
-    coordinate_y = models.IntegerField(default=1)
+    coordinate_x = models.IntegerField(default=0)
+    coordinate_y = models.IntegerField(default=0)
     turn = models.IntegerField(choices=turn_choices)
     points = models.IntegerField(default=0)
     winer = models.BooleanField(default=False)
     
 
 class Card(models.Model):
+    challenge = 'challenge'
+    true = 'true'
+    question = 'question'
+    penalty = 'penalty'
+
     card_choices = (
-        ('challenge', 'Reto'),
-        ('true', 'Verdad'),
-        ('question', 'Pregunta'),
-        ('penalty', 'Castigo'),
+        (challenge, 'Reto'),
+        (true, 'Verdad'),
+        (question, 'Pregunta'),
+        (penalty, 'Castigo'),
     )
     type = models.CharField(max_length=20, choices=card_choices)
     text = models.CharField(max_length=300)
     active = models.BooleanField(default=True)
 
+    @property
+    def color(self):
+        colors = {
+            self.challenge: 'red',
+            self.true: 'green',
+            self.question: 'blue',
+            self.penalty: 'black',
+
+        }
+        return colors[self.type]
+
+class Board(models.Model):
+    column_number = models.IntegerField(default=8)
+    row_number = models.IntegerField(default=8)
+    game = models.OneToOneField(Game, on_delete=models.CASCADE)
+
+class Box(models.Model):
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True)
+    position_x = models.IntegerField()
+    position_y = models.IntegerField()
+    
