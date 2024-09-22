@@ -74,6 +74,53 @@ def play_game(request, pk):
 
     return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'next_player':next_player, 'boxes':boxes})
 
+def see_game (request, pk):
+    players = Player.objects.filter(game=pk)    
+    number_of_rows_and_columns=list(range (8))
+    num_die = ""
+    game = Game.objects.get(pk=pk)
+    board = Board.objects.get(game=pk)
+    boxes = Box.objects.filter(board=board)
+    actual_player = game.get_actual_player()
+    next_player = game.get_next_player()
+    previous_player = game.get_previous_player()
+    if previous_player.coordinate_x == 0 and  previous_player.coordinate_y == 7:
+        for player in players:
+            y = player.coordinate_y
+            x = player.coordinate_x
+            if y % 2 != 0:
+                y = y*8
+                x = 7-x
+                player.points = x+y+1
+            else:
+                y = y*8             
+                player.points = x+y+1
+            player.save()
+        players = Player.objects.filter(game=pk).order_by('-points')
+        player = players[0]
+        player.winer=True
+        player.save()
+        return render(request, 'juego/winers.html', {'players':players,'game_pk':pk})
+    else:
+        return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'next_player':next_player, 'boxes':boxes})
+
+
+def restar_player (request, pk):
+    players = Player.objects.filter(game=pk)    
+    number_of_rows_and_columns=list(range (8))
+    num_die = ""
+    game = Game.objects.get(pk=pk)
+    board = Board.objects.get(game=pk)
+    boxes = Box.objects.filter(board=board)
+    actual_player = game.get_actual_player()
+    next_player = game.get_next_player()
+    previous_player = game.get_previous_player()
+    previous_player.coordinate_x = 0
+    previous_player.coordinate_y = 0
+    previous_player.save()
+    return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'next_player':next_player, 'boxes':boxes})
+
+
 def card(request, pk):
     game = Game.objects.get(pk=pk)
     previous_player = game.get_previous_player()
