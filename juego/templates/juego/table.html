@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Partida</title>
-        <meta charset="UTF-8">
-        <style>
-            table, td, th { 
-                border-collapse: collapse;
-                padding: 1em;
-                border: 2px solid;             
-            }
-            td {
-                height: 1em; 
-                width: 1em;    
-            }
-        </style>
-    </head>
-    <body>
-        <table>
+<head>
+    <title>Partida</title>
+    <meta charset="UTF-8">
+    <style>
+        /* Contenedor principal */
+        .game-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 2em;
+        }
+
+        .board {
+            border-collapse: collapse;
+        }
+
+        .board td {
+            height: 4em;
+            width: 4em;
+        }
+
+        .info-panel h2, .info-panel a {
+            margin: 10px 0;
+            display: block;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Tablero del juego -->
+        <table class="board">
             {% for row in num %}
                 <tr>
                     {% for column in num %}
@@ -25,12 +40,12 @@
                                 <tr>
                                     {% for player in players %}
                                         {% if row == player.coordinate_y and column == player.coordinate_x %}
-                                            <td style="background-color:{{player.color}}",>♝</td>
+                                            <td style="background-color:{{player.color}};">♝</td>
                                         {% endif %}
                                     {% endfor %}
                                     {% for box in boxes %}
                                         {% if row == box.position_y and column == box.position_x %}
-                                            <td style="background-color:{{box.card.color}}",></td>
+                                            <td style="background-color:{{box.card.color}};"></td>
                                         {% endif %}
                                     {% endfor %}
                                 </tr>
@@ -38,16 +53,19 @@
                         </td>
                     {% endfor %}
                 </tr>
-            {%endfor%}
+            {% endfor %}
         </table>
-        <h2>{{num_die}}</h2>
-        <h2><a href="{% url 'play-game' game_pk %}">Tirar el dado</a></h2>
-        <h2><a href="{% url 'card' game_pk %}">Ver tarjeta</a></h2>
-        <h2 style="color: {{ actual_player.color }};"> JUGADOR ACTUAL: {{actual_player.name}}</h2>
-        <h2 style="color: {{ next_player.color }};">SIGUIENTE JUGADOR: {{next_player.name}}</h2>
 
-        <br>
-        <h2><a href="{% url 'play-winers' game_pk %}">Terminar partida</a></h2>
-    </body>
+        <!-- Panel de información al lado derecho -->
+        <div class="info-panel">
+            <h2>Número en el dado: {{num_die}}</h2>
+            <h2><a href="{% url 'play-game' game_pk %}">Tirar el dado</a></h2>
+            <h2><a href="{% url 'card' game_pk %}">Ver tarjeta</a></h2>
+            <h2 style="color: {{ actual_player.color }};">JUGADOR ACTUAL: {{actual_player.name}}</h2>
+            <h2 style="color: {{ next_player.color }};">SIGUIENTE JUGADOR: {{next_player.name}}</h2>
+            <br>
+        </div>
+    </div>
+    <h2><a href="{% url 'play-winers' game_pk %}">Terminar partida</a></h2>
+</body>
 </html>
-{% comment %} {{ forloop.counter }} {% endcomment %}

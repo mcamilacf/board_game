@@ -22,7 +22,6 @@ def new_game(request):
             for i, card in enumerate(choices(cards, k=box_number)):
                 x = i % board.column_number
                 y = i // board.row_number
-                print(x, y)
                 box = Box(board=board, card=card, position_x=x, position_y=y)
                 box.save()
             return redirect('game-players', pk=game.pk) #es el nombre de la url
@@ -115,9 +114,49 @@ def restar_player (request, pk):
     actual_player = game.get_actual_player()
     next_player = game.get_next_player()
     previous_player = game.get_previous_player()
-    previous_player.coordinate_x = 0
-    previous_player.coordinate_y = 0
-    previous_player.save()
+    y = previous_player.coordinate_y
+    x = previous_player.coordinate_x
+    board = Board.objects.get(game=pk)
+    box = Box.objects.filter(board=board).get(position_x=x, position_y=y)
+    if box.card.type == "challenge" or box.card.type == "true" or box.card.type == "penalty":
+        if y % 2 != 0:
+            n = x + 4
+            if n > 7:
+                n -= 8
+                x = 7 - n
+                y -= 1
+            else:
+                x = n
+        else:
+            n = x - 4
+            if n < 0:
+                x = n * -1 -1
+                y -= 1
+            else:
+                x = n
+    elif box.card.type == "question":
+        if y % 2 != 0:
+            n = x + 2
+            if n > 7:
+                n -= 8
+                x = 7 - n
+                y -= 1
+            else:
+                x = n
+        else:
+            n = x - 2
+            if n < 0:
+                x = n * -1 -1
+                y -= 1
+            else:
+                x = n
+    if x < 0 or y < 0:
+        x = 0
+        y = 0
+    previous_player.coordinate_x = x
+    previous_player.coordinate_y = y
+    previous_player.save()     
+
     return render(request, 'juego/table.html', {'num':number_of_rows_and_columns, 'players':players, 'num_die':num_die, 'game_pk':pk, 'actual_player':actual_player, 'next_player':next_player, 'boxes':boxes})
 
 
